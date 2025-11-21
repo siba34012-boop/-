@@ -1,0 +1,27 @@
+name: Send Todoist "Главное на сегодня"
+
+on:
+  schedule:
+    - cron: '0 * * * 1-5'   # каждый час в рабочие дни, минута 0 (UTC)
+  workflow_dispatch: {}
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run script
+        env:
+          TODOIST_TOKEN: ${{ secrets.TODOIST_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python send_todoist_today.py
